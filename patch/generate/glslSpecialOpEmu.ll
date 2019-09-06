@@ -160,26 +160,50 @@ define float @llpc.fwidthCoarse.f32(float %p) #0
 ; GLSL: void EmitStreamVertex(int)
 define spir_func void @_Z16EmitStreamVertexi(i32 %stream) #0
 {
-    ; [9:8] = stream
-    %1 = shl i32 %stream, 8
-    ; 34 = 0x22, [3:0] = 2 (GS), [5:4] = 2 (emit)
-    %2 = or i32 %1, 34
     ; BuiltInWaveId (268435466 = 0x1000000A)
-    %3 = call i32 @llpc.input.import.builtin.GsWaveId.i32.i32(i32 268435466)
-    call void @llvm.amdgcn.s.sendmsg(i32 %2, i32 %3)
+    %1 = call i32 @llpc.input.import.builtin.GsWaveId.i32.i32(i32 268435466)
+    switch i32 %stream, label %StreamZero [ i32 0, label %StreamZero
+                                            i32 1, label %StreamOne
+                                            i32 2, label %StreamTwo
+                                            i32 3, label %StreamThree ]
+    ; [9:8] = stream
+    ; 34 = 0x22, [3:0] = 2 (GS), [5:4] = 2 (emit)
+StreamZero:
+    call void @llvm.amdgcn.s.sendmsg(i32 34, i32 %1)
+    ret void
+StreamOne:
+    call void @llvm.amdgcn.s.sendmsg(i32 290, i32 %1)
+    ret void
+StreamTwo:
+    call void @llvm.amdgcn.s.sendmsg(i32 546, i32 %1)
+    ret void
+StreamThree:
+    call void @llvm.amdgcn.s.sendmsg(i32 802, i32 %1)
     ret void
 }
 
 ; GLSL: void EndStreamPrimitive(int)
 define spir_func void @_Z18EndStreamPrimitivei(i32 %stream) #0
 {
-    ; [9:8] = stream
-    %1 = shl i32 %stream, 8
-    ; 18 = 0x12, [3:0] = 2 (GS), [5:4] = 1 (cut)
-    %2 = or i32 %1, 18
     ; BuiltInWaveId (268435466 = 0x1000000A)
-    %3 = call i32 @llpc.input.import.builtin.GsWaveId.i32.i32(i32 268435466)
-    call void @llvm.amdgcn.s.sendmsg(i32 %2, i32 %3)
+    %1 = call i32 @llpc.input.import.builtin.GsWaveId.i32.i32(i32 268435466)
+    switch i32 %stream, label %StreamZero [ i32 0, label %StreamZero
+                                            i32 1, label %StreamOne
+                                            i32 2, label %StreamTwo
+                                            i32 3, label %StreamThree ]
+    ; [9:8] = stream
+    ; 18 = 0x12, [3:0] = 2 (GS), [5:4] = 1 (cut)
+StreamZero:
+    call void @llvm.amdgcn.s.sendmsg(i32 18, i32 %1)
+    ret void
+StreamOne:
+    call void @llvm.amdgcn.s.sendmsg(i32 274, i32 %1)
+    ret void
+StreamTwo:
+    call void @llvm.amdgcn.s.sendmsg(i32 530, i32 %1)
+    ret void
+StreamThree:
+    call void @llvm.amdgcn.s.sendmsg(i32 786, i32 %1)
     ret void
 }
 
